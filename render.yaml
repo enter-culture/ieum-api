@@ -36,8 +36,8 @@ services:
         sync: false
       - key: CLOUDFLARE_R2_ENDPOINT
         sync: false
-      - key: CLOUDFLARE_R2_BUCKET_NAME # gogumang
-        sync: false
+      - key: CLOUDFLARE_R2_BUCKET_NAME # 버킷명은 비밀값이 아니므로 고정 (대시보드 오설정 방지)
+        value: gogumang
       - key: CLOUDFLARE_R2_PUBLIC_URL
         sync: false
       - key: TOUR_API_KEY
