@@ -1,0 +1,46 @@
+# Render Blueprint — ieum-api (NestJS)
+# 프로덕션은 컴파일된 dist를 실행한다 (nest start는 컴파일러를 메모리에 올려 무료 512MB에서 OOM).
+services:
+  - type: web
+    name: ieum-api
+    runtime: node
+    region: singapore # 서울 Supabase(ap-northeast-2)와 가장 가까운 Render 리전
+    plan: free
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm run start:prod # = node dist/main (경량 프로덕션 실행)
+    healthCheckPath: /api
+    envVars:
+      # 메모리 안전장치 (free 512MB)
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=460
+      - key: NODE_VERSION
+        value: 22.20.0
+      # 값은 대시보드에서 입력 (sync:false → git에 저장 안 함)
+      - key: DATABASE_URL # Supabase 세션 풀러 URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL # https://ieum-api.onrender.com/api/auth/google/callback
+        sync: false
+      - key: FRONTEND_URL # 배포된 프론트 주소
+        sync: false
+      - key: CLOUDFLARE_R2_ACCOUNT_ID
+        sync: false
+      - key: CLOUDFLARE_R2_ACCESS_KEY_ID
+        sync: false
+      - key: CLOUDFLARE_R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: CLOUDFLARE_R2_ENDPOINT
+        sync: false
+      - key: CLOUDFLARE_R2_BUCKET_NAME # gogumang
+        sync: false
+      - key: CLOUDFLARE_R2_PUBLIC_URL
+        sync: false
+      - key: TOUR_API_KEY
+        sync: false
+      - key: HERITAGE_API_KEY
+        sync: false
