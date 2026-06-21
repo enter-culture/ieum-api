@@ -9,6 +9,7 @@ import { DestinationsModule } from './destinations/destinations.module';
 import { HeritageModule } from './heritage/heritage.module';
 import { Comment } from './comments/comment.entity';
 import { CommentsModule } from './comments/comments.module';
+import { CultureModule } from './culture/culture.module';
 import { Like } from './likes/like.entity';
 import { LikesModule } from './likes/likes.module';
 import { Onboarding } from './onboarding/onboarding.entity';
@@ -44,6 +45,7 @@ import { VideosModule } from './videos/videos.module';
     VideosModule,
     DestinationsModule,
     HeritageModule,
+    CultureModule,
     UploadModule,
     OnboardingModule,
   ],
