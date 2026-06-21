@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { DestinationsModule } from './destinations/destinations.module';
 import { HeritageModule } from './heritage/heritage.module';
 import { Comment } from './comments/comment.entity';
 import { CommentsModule } from './comments/comments.module';
@@ -43,7 +42,6 @@ import { VideosModule } from './videos/videos.module';
     LikesModule,
     CommentsModule,
     VideosModule,
-    DestinationsModule,
     HeritageModule,
     CultureModule,
     UploadModule,

@@ -44,7 +44,7 @@ export class HeritageService {
   constructor(private readonly config: ConfigService) {}
 
   private get apiKey(): string {
-    return this.config.get<string>('HERITAGE_API_KEY') ?? FALLBACK_KEY;
+    return this.config.get<string>('DATA_GO_KR_API_KEY') ?? FALLBACK_KEY;
   }
 
   async search(query = '', page = '1'): Promise<HeritageSearchItem[]> {

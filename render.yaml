@@ -40,7 +40,5 @@ services:
         value: gogumang
       - key: CLOUDFLARE_R2_PUBLIC_URL
         sync: false
-      - key: TOUR_API_KEY
-        sync: false
-      - key: HERITAGE_API_KEY
+      - key: DATA_GO_KR_API_KEY
         sync: false
