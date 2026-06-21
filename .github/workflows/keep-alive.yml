@@ -1,0 +1,26 @@
+name: Keep Render Alive
+
+# Render 무료 플랜은 15분간 요청이 없으면 슬립 모드로 전환됩니다.
+# 5분마다 health check 엔드포인트를 호출해 서버를 깨워둡니다.
+on:
+  schedule:
+    - cron: '*/5 * * * *' # 매 5분마다 실행
+  workflow_dispatch: # 수동 실행도 허용
+
+env:
+  HEALTH_URL: https://ieum-api.onrender.com/api/health
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          echo "Pinging $HEALTH_URL"
+          status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$HEALTH_URL")
+          echo "HTTP status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Health check failed with status $status"
+            exit 1
+          fi
+          echo "Health check OK"
