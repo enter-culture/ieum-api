@@ -8,6 +8,7 @@ describe('CultureService', () => {
 
   it('normalizes period2 XML into CultureEvent[]', async () => {
     global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
       text: () => Promise.resolve(SAMPLE_XML),
     }) as unknown as typeof fetch;
 
@@ -42,10 +43,23 @@ describe('CultureService', () => {
 
   it('returns [] when no items', async () => {
     global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
       text: () => Promise.resolve('<?xml version="1.0"?><response><body><items></items></body></response>'),
     }) as unknown as typeof fetch;
     const svc = new CultureService(config);
     const out = await svc.events({ xfrom: 0, yfrom: 0, xto: 1, yto: 1 }, '20260601', '20260831');
     expect(out).toEqual([]);
+  });
+
+  it('throws when period2 API returns non-ok response', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve(''),
+    }) as unknown as typeof fetch;
+    const svc = new CultureService(config);
+    await expect(
+      svc.events({ xfrom: 0, yfrom: 0, xto: 1, yto: 1 }, '20260601', '20260831'),
+    ).rejects.toThrow('period2 API 500');
   });
 });

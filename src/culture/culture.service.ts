@@ -50,6 +50,7 @@ export class CultureService {
     ].join('&');
 
     const res = await fetch(`${this.base}/period2?${params}`);
+    if (!res.ok) throw new Error(`period2 API ${res.status}`);
     const xml = await res.text();
     const data = await parseStringPromise(xml, {
       explicitArray: false,
