@@ -61,9 +61,13 @@ export class AuthController {
       const url = new URL(redirectUri);
       url.searchParams.set('token', token);
       res.redirect(url.toString());
-    } catch {
+    } catch (e) {
+      // 실패 이유를 프론트로 전달해 화면에서 바로 진단할 수 있게 한다.
+      const reason = e instanceof Error ? e.message : 'unknown';
+      console.error('[google callback failed]', reason);
       const url = new URL(redirectUri);
       url.searchParams.set('error', 'auth_failed');
+      url.searchParams.set('reason', reason.slice(0, 200));
       res.redirect(url.toString());
     }
   }

@@ -79,7 +79,10 @@ export class AuthService {
     });
 
     if (!tokenRes.ok) {
-      throw new UnauthorizedException('Google token exchange failed');
+      const body = await tokenRes.text();
+      throw new UnauthorizedException(
+        `token_exchange ${tokenRes.status}: ${body.slice(0, 160)}`,
+      );
     }
     const tokens = (await tokenRes.json()) as { access_token?: string };
     if (!tokens.access_token) {
