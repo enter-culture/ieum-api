@@ -5,9 +5,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
 
 export interface AuthUser {
   sub: string; // google id
+  uid: number; // db user id
   email: string;
   name: string;
   picture: string;
@@ -25,6 +27,7 @@ export class AuthService {
   constructor(
     private readonly config: ConfigService,
     private readonly jwt: JwtService,
+    private readonly users: UsersService,
   ) {}
 
   /**
@@ -97,8 +100,12 @@ export class AuthService {
       picture: string;
     };
 
+    // DB에 User upsert 후 그 id를 토큰에 담는다.
+    const user = await this.users.upsertFromGoogle(profile);
+
     return this.signToken({
       sub: profile.sub,
+      uid: user.id,
       email: profile.email,
       name: profile.name,
       picture: profile.picture,

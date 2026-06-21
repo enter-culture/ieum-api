@@ -1,11 +1,17 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DestinationsModule } from './destinations/destinations.module';
 import { HeritageModule } from './heritage/heritage.module';
+import { Like } from './likes/like.entity';
+import { LikesModule } from './likes/likes.module';
 import { UploadModule } from './upload/upload.module';
+import { User } from './users/user.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,7 +21,19 @@ import { UploadModule } from './upload/upload.module';
       // 배포(Render): 대시보드가 주입한 process.env가 그대로 사용됨(파일이 덮어쓰지 않음).
       envFilePath: ['.env.local', '.env'],
     }),
+    MikroOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        driver: PostgreSqlDriver,
+        clientUrl: config.get<string>('DATABASE_URL'),
+        entities: [User, Like],
+        // Supabase는 SSL 필수.
+        driverOptions: { connection: { ssl: { rejectUnauthorized: false } } },
+      }),
+    }),
     AuthModule,
+    UsersModule,
+    LikesModule,
     DestinationsModule,
     HeritageModule,
     UploadModule,

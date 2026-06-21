@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
+import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import type { AuthUser } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -15,7 +16,10 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get('google')
   @ApiOperation({
@@ -66,8 +70,16 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '현재 로그인 사용자 정보 (Bearer 토큰 필요)' })
-  me(@Req() req: Request & { user: AuthUser }): AuthUser {
-    return req.user;
+  @ApiOperation({ summary: '현재 로그인 사용자 정보 (DB 조회, Bearer 토큰 필요)' })
+  async me(@Req() req: Request & { user: AuthUser }) {
+    const user = await this.usersService.findById(req.user.uid);
+    if (!user) return req.user;
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+      createdAt: user.createdAt,
+    };
   }
 }
