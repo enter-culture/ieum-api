@@ -20,8 +20,9 @@ export class UploadService {
     });
   }
 
-  async createPresignedUrl({ filename, contentType }: PresignDto) {
-    const key = `shorts/${Date.now()}-${filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+  async createPresignedUrl({ filename, contentType, folder }: PresignDto) {
+    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const key = `${folder ?? 'shorts'}/${Date.now()}-${safeName}`;
 
     const command = new PutObjectCommand({
       Bucket: this.config.get<string>('CLOUDFLARE_R2_BUCKET_NAME'),

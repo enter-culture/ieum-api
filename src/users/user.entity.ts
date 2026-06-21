@@ -10,6 +10,9 @@ export const User = defineEntity({
     email: p.string(),
     name: p.string(),
     picture: p.text().nullable(),
+    nickname: p.text().nullable(),
+    region: p.text().nullable(),
+    category: p.text().nullable(),
     createdAt: p.datetime().onCreate(() => new Date()),
     updatedAt: p
       .datetime()
