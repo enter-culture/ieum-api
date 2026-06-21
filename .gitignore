@@ -1,0 +1,14 @@
+node_modules
+
+# build output
+/dist
+/coverage
+
+# IDE
+.idea
+
+# 실제 env 파일은 추적 안 함. 키 템플릿(.env)만 커밋한다 (Render는 대시보드로 값 주입).
+.env*
+!.env
+
+/generated/prisma
