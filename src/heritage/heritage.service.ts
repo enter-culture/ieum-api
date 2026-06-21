@@ -11,9 +11,9 @@ const HERITAGE_CODES: Record<
 > = {
   'ganggang-sullae': { ccbaAsno: '0000080000000', ccbaCtcd: '36', ccbaKdcd: '17' },
   pansori: { ccbaAsno: '0000050000000', ccbaCtcd: 'ZZ', ccbaKdcd: '17' },
-  hahoetal: { ccbaAsno: '0000680000000', ccbaCtcd: '37', ccbaKdcd: '17' },
+  hahoetal: { ccbaAsno: '0000690000000', ccbaCtcd: '37', ccbaKdcd: '17' }, // 제69호 (경북)
   namsadang: { ccbaAsno: '0000030000000', ccbaCtcd: '11', ccbaKdcd: '17' },
-  taekkyeon: { ccbaAsno: '0000750000000', ccbaCtcd: '33', ccbaKdcd: '17' },
+  taekkyeon: { ccbaAsno: '0000760000000', ccbaCtcd: '33', ccbaKdcd: '17' }, // 제76호 (충북)
 };
 
 export interface HeritageSearchItem {
@@ -86,6 +86,16 @@ export class HeritageService {
     return this.fetchDetail(code.ccbaKdcd, code.ccbaAsno, code.ccbaCtcd);
   }
 
+  /** 응답이 XML이 아니면(잘못된 코드 시 국가유산청이 HTML 홈페이지를 돌려줌) null 반환 — 500 방지 */
+  private async safeParseXml(xml: string): Promise<any> {
+    if (!xml || !xml.trimStart().startsWith('<?xml')) return null;
+    try {
+      return await parseStringPromise(xml, { explicitArray: false, trim: true });
+    } catch {
+      return null;
+    }
+  }
+
   private async fetchDetail(
     kdcd: string,
     asno: string,
@@ -108,8 +118,8 @@ export class HeritageService {
     ]);
 
     const [detailData, imageData] = await Promise.all([
-      parseStringPromise(detailXml, { explicitArray: false, trim: true }),
-      parseStringPromise(imageXml, { explicitArray: false, trim: true }),
+      this.safeParseXml(detailXml),
+      this.safeParseXml(imageXml),
     ]);
 
     const item = detailData?.result?.item ?? {};
