@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { User } from '../users/user.entity';
+import { User, IUser } from '../users/user.entity';
 import { Comment, IComment } from './comment.entity';
 
 export interface CommentDto {
@@ -39,10 +39,10 @@ export class CommentsService {
       user: this.em.getReference(User, userId),
     });
     await this.em.flush();
-    return this.toDto(comment as unknown as IComment & { user: User });
+    return this.toDto(comment as unknown as IComment & { user: IUser });
   }
 
-  private toDto(c: IComment & { user: User }): CommentDto {
+  private toDto(c: IComment & { user: IUser }): CommentDto {
     return {
       id: c.id,
       shortsId: c.shortsId,
