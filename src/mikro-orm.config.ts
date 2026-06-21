@@ -1,5 +1,6 @@
 import { defineConfig } from '@mikro-orm/postgresql';
 import { Like } from './likes/like.entity';
+import { Onboarding } from './onboarding/onboarding.entity';
 import { User } from './users/user.entity';
 import { Video } from './videos/video.entity';
 
@@ -9,7 +10,7 @@ import { Video } from './videos/video.entity';
  */
 export default defineConfig({
   clientUrl: process.env.DATABASE_URL,
-  entities: [User, Like, Video],
+  entities: [User, Like, Video, Onboarding],
   // Supabase는 SSL 필수. v7(kysely/pg)에서는 ssl을 평탄하게 전달한다.
   driverOptions: { ssl: { rejectUnauthorized: false } },
   debug: false,

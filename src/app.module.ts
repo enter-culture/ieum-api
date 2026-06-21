@@ -9,6 +9,8 @@ import { DestinationsModule } from './destinations/destinations.module';
 import { HeritageModule } from './heritage/heritage.module';
 import { Like } from './likes/like.entity';
 import { LikesModule } from './likes/likes.module';
+import { Onboarding } from './onboarding/onboarding.entity';
+import { OnboardingModule } from './onboarding/onboarding.module';
 import { UploadModule } from './upload/upload.module';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
@@ -28,7 +30,7 @@ import { VideosModule } from './videos/videos.module';
       useFactory: (config: ConfigService) => ({
         driver: PostgreSqlDriver,
         clientUrl: config.get<string>('DATABASE_URL'),
-        entities: [User, Like, Video],
+        entities: [User, Like, Video, Onboarding],
         // Supabase는 SSL 필수. v7(kysely/pg)에서는 ssl을 평탄하게 전달한다.
         driverOptions: { ssl: { rejectUnauthorized: false } },
       }),
@@ -40,6 +42,7 @@ import { VideosModule } from './videos/videos.module';
     DestinationsModule,
     HeritageModule,
     UploadModule,
+    OnboardingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
