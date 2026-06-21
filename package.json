@@ -87,6 +87,10 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "moduleNameMapper": {
+      "^@mikro-orm/core$": "<rootDir>/../test/mocks/mikro-orm-core.js",
+      "^@mikro-orm/postgresql$": "<rootDir>/../test/mocks/mikro-orm-postgresql.js"
+    },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
