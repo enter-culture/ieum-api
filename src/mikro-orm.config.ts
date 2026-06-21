@@ -9,7 +9,7 @@ import { User } from './users/user.entity';
 export default defineConfig({
   clientUrl: process.env.DATABASE_URL,
   entities: [User, Like],
-  // Supabase는 SSL 필수. 자체 서명 체인 이슈 회피.
-  driverOptions: { connection: { ssl: { rejectUnauthorized: false } } },
+  // Supabase는 SSL 필수. v7(kysely/pg)에서는 ssl을 평탄하게 전달한다.
+  driverOptions: { ssl: { rejectUnauthorized: false } },
   debug: false,
 });

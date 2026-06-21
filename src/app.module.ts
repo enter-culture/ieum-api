@@ -27,8 +27,8 @@ import { UsersModule } from './users/users.module';
         driver: PostgreSqlDriver,
         clientUrl: config.get<string>('DATABASE_URL'),
         entities: [User, Like],
-        // Supabase는 SSL 필수.
-        driverOptions: { connection: { ssl: { rejectUnauthorized: false } } },
+        // Supabase는 SSL 필수. v7(kysely/pg)에서는 ssl을 평탄하게 전달한다.
+        driverOptions: { ssl: { rejectUnauthorized: false } },
       }),
     }),
     AuthModule,
