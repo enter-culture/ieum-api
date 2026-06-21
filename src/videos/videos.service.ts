@@ -1,3 +1,5 @@
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -18,12 +20,27 @@ export interface VideoDto {
   createdAt: Date;
 }
 
+// presigned GET URL 유효시간 (6시간)
+const URL_TTL = 60 * 60 * 6;
+
 @Injectable()
 export class VideosService {
+  private readonly r2: S3Client;
+
   constructor(
     private readonly em: EntityManager,
     private readonly config: ConfigService,
-  ) {}
+  ) {
+    this.r2 = new S3Client({
+      region: 'auto',
+      endpoint: this.config.get<string>('CLOUDFLARE_R2_ENDPOINT'),
+      credentials: {
+        accessKeyId: this.config.get<string>('CLOUDFLARE_R2_ACCESS_KEY_ID') ?? '',
+        secretAccessKey:
+          this.config.get<string>('CLOUDFLARE_R2_SECRET_ACCESS_KEY') ?? '',
+      },
+    });
+  }
 
   async list(): Promise<VideoDto[]> {
     const videos = await this.em.find(
@@ -31,7 +48,7 @@ export class VideosService {
       {},
       { orderBy: { createdAt: 'DESC' } },
     );
-    return videos.map((v) => this.toDto(v));
+    return Promise.all(videos.map((v) => this.toDto(v)));
   }
 
   async create(dto: CreateVideoDto): Promise<VideoDto> {
@@ -45,14 +62,19 @@ export class VideosService {
     return this.toDto(video);
   }
 
-  private publicUrl(r2Key: string): string {
-    const base = (
-      this.config.get<string>('CLOUDFLARE_R2_PUBLIC_URL') ?? ''
-    ).replace(/\/$/, '');
-    return `${base}/${r2Key}`;
+  /** R2 객체의 presigned GET URL 발급 (공개 접근 설정 불필요) */
+  private signedUrl(r2Key: string): Promise<string> {
+    return getSignedUrl(
+      this.r2,
+      new GetObjectCommand({
+        Bucket: this.config.get<string>('CLOUDFLARE_R2_BUCKET_NAME'),
+        Key: r2Key,
+      }),
+      { expiresIn: URL_TTL },
+    );
   }
 
-  private toDto(v: IVideo): VideoDto {
+  private async toDto(v: IVideo): Promise<VideoDto> {
     return {
       id: v.id,
       title: v.title,
@@ -60,7 +82,7 @@ export class VideosService {
       category: v.category,
       subCategory: v.subCategory,
       region: v.region,
-      url: this.publicUrl(v.r2Key),
+      url: await this.signedUrl(v.r2Key),
       heritageId: v.heritageId,
       heritageAsno: v.heritageAsno,
       heritageCtcd: v.heritageCtcd,
